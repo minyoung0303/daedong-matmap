@@ -1,4 +1,3 @@
-// 지도를 불러오고 렌더링하는 컴포넌트
 import { useEffect, useRef } from 'react';
 
 const Map = () => {
