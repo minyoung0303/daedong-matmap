@@ -5,41 +5,66 @@ const Map = () => {
 
     useEffect(() => {
         const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY;
-        const src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false`;
+        
+        if (!kakaoKey) {
+            console.error("VITE_KAKAO_JS_KEY가 없습니다.");
+            return;
+        }
 
-        const loadKakaoMap = () => {
-            if (window.kakao && window.kakao.maps) {
-                window.kakao.maps.load(() => {
-                    const container = mapRef.current;
-                    const options = {
-                        center: new window.kakao.maps.LatLng(37.5665, 126.9780),
-                        level: 5,
-                    };
+        const createMap = () => {
+            if (!mapRef.current || !window.kakao?.maps) return;
 
-                    new window.kakao.maps.Map(container, options);
+            window.kakao.maps.load(() => {
+                const defaultCenter = new window.kakao.maps.LatLng(37.5665, 126.9780); // 서울 중심 좌표
+
+                const map = new window.kakao.maps.Map(mapRef.current,{
+                    center: defaultCenter,
+                    level: 4,
                 });
-                return;
-            }
 
-            const script = document.createElement("script");
-            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false`;
-            script.async = true;
-            // document.head.appendChild(script);
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const currentPosition = new window.kakao.maps.LatLng(
+                                position.coords.latitude,
+                                position.coords.longitude
+                            );
 
-            script.onload = () => {
-                window.kakao.maps.load(() => {
-                    const container = mapRef.current;
-                    const options = {
-                        center: new window.kakao.maps.LatLng(37.5665, 126.9780),
-                        level: 5,
-                    };
+                            const marker = new window.kakao.maps.Marker({
+                                position: currentPosition,
+                            });
 
-                    new window.kakao.maps.Map(container, options);
-                });
-            };
+                            marker.setMap(map);
+                            map.setCenter(currentPosition);
+                        },
+                        (error) => {
+                            console.error("현재 위치 확인 불가:", error);
+                        }
+                    );
+                } else {
+                    console.error("Geolocation을 지원하지 않는 브라우저입니다.");
+                }
+            });
         };
 
-        loadKakaoMap();
+        const existingScript = document.querySelector(
+            `script[src*="dapi.kakao.com/v2/maps/sdk.js"]`
+        );
+
+        if (existingScript) {
+            createMap();
+            return;
+        }
+        
+        const script = document.createElement("script");
+        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false`;
+        script.async = true;
+        script.onload = createMap;
+        script.onerror = () => {
+            console.error("KakaoMap SDK load failed.");
+        };
+
+        document.head.appendChild(script);
     }, []);
 
     return (
@@ -50,7 +75,7 @@ const Map = () => {
                 height: "500px",
             }}
         />
-   );
+    );
 };
 
 export default Map;
