@@ -3,6 +3,8 @@ package com.daedongmat.place.service;
 import com.daedongmat.place.dto.NearbyRestaurantListResponse;
 import com.daedongmat.place.dto.NearbyRestaurantRequest;
 import com.daedongmat.place.dto.PlaceNearbyResponse;
+import com.daedongmat.place.repository.PlaceRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,7 +13,10 @@ import java.util.List;
 // 이 클래스가 비즈니스 로직을 담당하는 서비스 계층이라는 뜻.
 // Spring이 Bean으로 등록해 Controller에서 주입받을 수 있다.
 @Service
+@RequiredArgsConstructor
 public class PlaceService {
+    
+    private final PlaceRepository placeRepository;
 
     // findNearbyRestaurants() ; 실제 핵심 역할
     // 현재 단계에서는 아직 Repository와 DB를 붙이지 않았기 때문에 더미데이터를 직접 만들어 응답 DTO로 반환한다.
