@@ -84,6 +84,34 @@ flowchart TD
     Q --> S[(PlaceSuggestion 저장)]
 ```
 
+```
+DTO
+- 함수 거의 없음
+- 역할: 데이터 담기
+
+Entity
+- 엔티티 생명주기 관련 함수만 둠
+- 예: onCreate(), onUpdate()
+
+Service
+- 핵심 로직 함수 둠
+
+- 예:
+    - findNearbyRestaurants()
+    - calculateDistance()
+    - toPlaceNearbyResponse()
+
+Controller
+- API 입구 함수 둠
+- 예:
+    - getNearbyRestaurants()
+
+Repository
+- DB 조회 함수 둠
+- 예:
+    - findByPlaceTypeAndStatus()
+```
+
 ## ERD
 
 ```mermaid
