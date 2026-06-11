@@ -9,7 +9,7 @@
 // : 파라미터를 각각 따로 받으면 간단하지만, 나중에 검색 조건이 늘어날 경우 Controller 메서드 인자가 너무 길어짐.
 // 요청 DTO로 묶어두면 API 입력 구조가 명확해지고, 검증도 한 곳에 모을 수 있음
 
-package com.daedongmat.dto.place;
+package com.daedongmat.place.dto;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
