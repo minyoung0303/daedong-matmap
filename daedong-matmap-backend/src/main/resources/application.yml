@@ -3,29 +3,29 @@ spring:
     name: daedong-matmap
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/daedong_matmap
+    url: jdbc:postgresql://localhost:5433/daedong_matmap
     username: daedong
     password: 12345
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: validate
-
-    show-sql: true
-
-    properties:
-      hibernate:
-        format_sql: true
+      ddl-auto: none
+    show-sql: false
+    open-in-view: false
 
   flyway:
     enabled: true
-    baseline-on-migrate: true
+    url: jdbc:postgresql://localhost:5433/daedong_matmap
+    user: daedong
+    password: 12345
 
-  server:
-    port: 8080
+server:
+  port: 8080
+  servlet:
+    context-path: /
 
-  logging:
-    level:
-      org.hibernate.SQL: debug
-      org.hibernate.orm.jdbc.bind: trace
+logging:
+  level:
+    root: INFO
+    com.daedongmat: DEBUG
