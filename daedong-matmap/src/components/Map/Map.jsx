@@ -1,198 +1,142 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
+import { useKakaoMap } from '../../hooks/useKakaoMap.js';
+import { escapeHtml, formatDistance } from '../../utils/format.js';
 import styles from './Map.module.css';
 
-const Map = () => {
-    const mapRef = useRef(null);
-    const kakaoMapRef = useRef(null);
-    const markerRef = useRef(null);
-    const psRef = useRef(null);
-    const placeMarkerRef = useRef([]);
-    const [keyword, setKeyword] = useState('');
+/**
+ * 지도와 마커만 담당하는 컴포넌트.
+ * 검색과 위치 상태는 App이 들고 있고, 여기는 결과를 그리는 역할만 한다.
+ *
+ * 주의: 컴포넌트 이름이 Map이라서 내부에서 전역 Map 생성자를 쓸 수 없다.
+ * 마커 보관은 일반 객체(id -> marker)로 한다.
+ */
+function Map({ center, currentPosition, places = [], selectedId, onSelect }) {
+  const { containerRef, map, errorMessage } = useKakaoMap({ initialCenter: center });
 
-    useEffect(() => {
-        const kakaoKey = import.meta.env.VITE_KAKAO_JS_KEY;
-        
-        if (!kakaoKey) {
-            console.error("VITE_KAKAO_JS_KEY가 없습니다.");
-            return;
-        }
+  const placeMarkersRef = useRef({});
+  const currentMarkerRef = useRef(null);
+  const infoWindowRef = useRef(null);
+  const hasFittedRef = useRef(false);
 
-        const clearPlaceMarkers = () => {
-            placeMarkersRef.current.forEach(marker => marker.setMap(null));
-            placeMarkersRef.current = [];
-        }
+  // 현재 위치 마커
+  useEffect(() => {
+    if (!map || !currentPosition) {
+      return;
+    }
 
-        const searchPlaces = (searchKeyword) => {
-            if (!psRef.current || !kakaoMapRef.current) return;
+    const { kakao } = window;
+    const position = new kakao.maps.LatLng(currentPosition.lat, currentPosition.lng);
 
-            setKeyword(searchKeyword);
-            clearPlaceMarkers();
+    if (currentMarkerRef.current) {
+      currentMarkerRef.current.setPosition(position);
+    } else {
+      currentMarkerRef.current = new kakao.maps.Marker({
+        map,
+        position,
+        zIndex: 10,
+        title: '현재 위치',
+      });
+    }
 
-            psRef.current.keywordSearch(searchKeyword, (data, status) => {
-                if (status === window.kakao.maps.services.Status.OK) {
-                    console.error(`${searchKeyword} 검색 결과가 없습니다.`);
-                    return;
-                }
+    // 아직 검색 결과가 없을 때만 현재 위치로 중심을 옮긴다.
+    if (!hasFittedRef.current) {
+      map.setCenter(position);
+    }
+  }, [map, currentPosition]);
 
-                const bounds = new window.kakao.maps.LatLngBounds();
+  // 검색 결과 -> 마커 동기화
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
 
-                data.forEach((place) => {
-                    const position = new window.kakao.maps.LatLng(place.y, place.x);
+    const { kakao } = window;
 
-                    const marker = new window.kakao.maps.Marker({
-                        map: kakaoMapRef.current,
-                        position,
-                    });
+    // 이전 마커 제거
+    Object.values(placeMarkersRef.current).forEach((marker) => marker.setMap(null));
+    placeMarkersRef.current = {};
 
-                    placeMarkersRef.current.push(marker);
-                    bounds.extent(position);
-                });
+    if (places.length === 0) {
+      return;
+    }
 
-                kakaoMapRef.current.setBounds(bounds);
-            });
-        };
+    const bounds = new kakao.maps.LatLngBounds();
 
-        const createMap = () => {
-            if (!mapRef.current || !window.kakao?.maps) return;
+    places.forEach((place) => {
+      const position = new kakao.maps.LatLng(place.lat, place.lng);
+      const marker = new kakao.maps.Marker({ map, position, title: place.name });
 
-            window.kakao.maps.load(() => {
-                const defaultCenter = new window.kakao.maps.LatLng(37.5665, 126.9780); // 서울 중심 좌표
+      kakao.maps.event.addListener(marker, 'click', () => onSelect?.(place.id));
 
-                const map = new window.kakao.maps.Map(mapRef.current,{
-                    center: defaultCenter,
-                    level: 4,
-                });
+      placeMarkersRef.current[place.id] = marker;
+      bounds.extend(position);
+    });
 
-                kakaoMapRef.current = map;
+    if (currentPosition) {
+      bounds.extend(new kakao.maps.LatLng(currentPosition.lat, currentPosition.lng));
+    }
 
-                if (window.kakao.maps.services) {
-                    psRef.current = new window.kakao.maps.services.Places();
-                }
+    map.setBounds(bounds);
+    hasFittedRef.current = true;
 
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            const currentPosition = new window.kakao.maps.LatLng(
-                                position.coords.latitude,
-                                position.coords.longitude
-                            );
-
-                            const marker = new window.kakao.maps.Marker({
-                                position: currentPosition,
-                            });
-
-                            marker.setMap(map);
-                            markerRef.current = marker;
-                            map.setCenter(currentPosition);
-                        },
-                        (error) => {
-                            console.error("현재 위치 확인 불가:", error);
-                        }
-                    );
-                } else {
-                    console.error("Geolocation을 지원하지 않는 브라우저입니다.");
-                }
-            });
-        };
-
-        const existingScript = document.querySelector(
-            `script[src*="dapi.kakao.com/v2/maps/sdk.js"]`
-        );
-
-        if (existingScript) {
-            createMap();
-            return;
-        }
-        
-        const script = document.createElement("script");
-        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoKey}&autoload=false`;
-        script.async = true;
-        script.onload = createMap;
-        script.onerror = () => {
-            console.error("KakaoMap SDK load failed.");
-        };
-
-        document.head.appendChild(script);
-    }, []);
-
-    const handleSearchRestaurant = () => {
-        if (!psRef.current) {
-            console.error("장소 검색 서비스를 사용할 수 없습니다.");
-            return;
-        }
-        searchNearby("밥집");
+    return () => {
+      Object.values(placeMarkersRef.current).forEach((marker) => marker.setMap(null));
+      placeMarkersRef.current = {};
     };
+    // currentPosition은 bounds 계산에만 쓰고, 위치가 갱신될 때마다 다시 맞추지는 않는다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, places, onSelect]);
 
-    const handleSearchCafe = () => {
-        if (!psRef.current) {
-            console.error("장소 검색 서비스를 사용할 수 없습니다.");
-            return;
-        }
-        searchNearby("카페");
-    };
+  // 선택된 장소 -> InfoWindow + 중심 이동
+  useEffect(() => {
+    if (!map) {
+      return;
+    }
 
-    const searchNearby = (searchKeyword) => {
-        if (!psRef.current || !kakaoMapRef.current) return;
-        
-        placeMarkersRef.current.forEach((marker) => marker.setMap(null));
-        placeMarkersRef.current = [];
+    const { kakao } = window;
 
-        const center = kakaoMapRef.current.getCenter();
+    if (!infoWindowRef.current) {
+      infoWindowRef.current = new kakao.maps.InfoWindow({ removable: true, zIndex: 20 });
+    }
 
-        psRef.current.keywordSearch(searchKeyword, (data, status) => {
-            if (status === window.kakao.maps.services.Status.OK) {
-                console.error(`${searchKeyword} 검색 결과가 없습니다.`);
-                return;
-            }
+    const infoWindow = infoWindowRef.current;
+    const place = places.find((item) => item.id === selectedId);
 
-            const bounds = new window.kakao.maps.LatLngBounds();
+    if (!place) {
+      infoWindow.close();
+      return;
+    }
 
-            data.forEach((place) => {
-                const position = new window.kakao.maps.LatLng(place.y, place.x);
-
-                const marker = new window.kakao.maps.Marker({
-                    map: kakaoMapRef.current,
-                    position,
-                });
-
-                placeMarkersRef.current.push(marker);
-                bounds.extend(poisition);
-            });
-
-            bounds.extend(center);
-            kakaoMapRef.current.setBounds(bounds);
-            setKeyword(searchKeyword);
-        }, {
-            location: center,
-            radius: 3000,
-        });
-    };
-
-    return (
-        <div className={styles.container}>
-            <div className={styles.toolbar}>
-                <button
-                    type="button"
-                    className={styles.button}
-                    onClick={handleSearchRestaurant}
-                >
-                    밥집 검색
-                </button>
-                <button
-                    type="button"
-                    className={styles.button}
-                    onClick={handleSearchCafe}
-                >
-                    카페 검색
-                </button>
-            </div>
-            <div
-                ref={mapRef}
-                className={styles.map}
-                aria-label={keyword ? `${keyword} 검색 지도` : "지도"}
-            />
-            </div>
+    const distance = formatDistance(place.distance);
+    // 카카오에서 온 값이므로 반드시 이스케이프한다.
+    infoWindow.setContent(
+      `<div class="${styles.infoWindow}">
+         <strong>${escapeHtml(place.name)}</strong>
+         ${distance ? `<span>${escapeHtml(distance)}</span>` : ''}
+       </div>`
     );
-};
+
+    const marker = placeMarkersRef.current[place.id];
+
+    if (marker) {
+      infoWindow.open(map, marker);
+    }
+
+    map.panTo(new kakao.maps.LatLng(place.lat, place.lng));
+  }, [map, places, selectedId]);
+
+  return (
+    <div className={styles.container}>
+      {/* 지도는 마우스/터치 전용이라, 키보드와 스크린리더 사용자는 아래 리스트로 같은 정보를 얻는다. */}
+      <div ref={containerRef} className={styles.map} role="region" aria-label="주변 장소 지도" />
+
+      {errorMessage && (
+        <p className={styles.error} role="alert">
+          {errorMessage}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default Map;

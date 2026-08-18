@@ -1,0 +1,318 @@
+/* 바텀시트. 미니앱 기준이라 아래에서 올라오는 형태로 잡았다. */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* 데스크톱에서도 앱 셸 폭에 맞춰 가운데 정렬 */
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.sheet {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: 88svh;
+  background: var(--app-bg);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.18);
+  animation: slideUp 0.22s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(12%);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation: none;
+  }
+}
+
+/* --- 헤더 --- */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 18px 16px 12px;
+  border-bottom: 1px solid var(--app-border);
+  flex: none;
+}
+
+.headerText {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--app-text);
+  letter-spacing: -0.2px;
+}
+
+.meta {
+  margin: 3px 0 0;
+  font-size: 12px;
+  color: var(--app-text-muted);
+}
+
+.distance {
+  color: var(--app-accent);
+  font-weight: 600;
+}
+
+.close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--app-surface-muted);
+  color: var(--app-text-muted);
+  font-size: 14px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.close:hover {
+  color: var(--app-text);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: 2px;
+}
+
+/* --- 본문 --- */
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 16px calc(24px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ratingSummary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ratingScore {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+.ratingCount,
+.ratingEmpty {
+  font-size: 12px;
+  color: var(--app-text-muted);
+}
+
+/* --- 기본 정보 --- */
+
+.info {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.infoRow {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.infoRow dt {
+  flex: none;
+  width: 34px;
+  color: var(--app-text-muted);
+}
+
+.infoRow dd {
+  margin: 0;
+  color: var(--app-text);
+  word-break: break-word;
+}
+
+.phoneLink {
+  color: var(--app-accent);
+  text-decoration: none;
+}
+
+.phoneLink:hover {
+  text-decoration: underline;
+}
+
+/* --- 액션 --- */
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shareMessage {
+  margin: -6px 0 0;
+  font-size: 12px;
+  color: var(--app-accent);
+}
+
+/* --- 섹션 --- */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-top: 12px;
+  border-top: 1px solid var(--app-border);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--app-text);
+}
+
+.emptyText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--app-text-muted);
+}
+
+/* --- 메뉴 --- */
+
+.menuList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.menuItem {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.menuName {
+  color: var(--app-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.badge {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--app-accent-soft);
+  color: var(--app-accent);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.menuPrice {
+  flex: none;
+  color: var(--app-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- 리뷰 --- */
+
+.reviewList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reviewItem {
+  padding-top: 11px;
+  border-top: 1px dashed var(--app-border);
+}
+
+.reviewHead {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.reviewAuthor {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.reviewDate {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--app-text-muted);
+}
+
+.reviewContent {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--app-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* --- 오류 --- */
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--app-danger-bg);
+}
+
+.errorText,
+.inlineError {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--app-danger);
+  white-space: pre-line;
+}

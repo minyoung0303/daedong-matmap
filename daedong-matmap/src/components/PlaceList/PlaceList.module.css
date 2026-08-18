@@ -1,0 +1,190 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.summary {
+  margin: 0;
+  padding: 11px 14px 6px;
+  font-size: 13px;
+  color: var(--app-text-muted);
+}
+
+.summary strong {
+  color: var(--app-accent);
+  font-weight: 700;
+}
+
+.note {
+  font-size: 12px;
+}
+
+/* 적용 중인 음식 종류 필터 표시 */
+.filterLabel {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--app-accent-soft);
+  color: var(--app-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 리스트 + 우측 세로 페이지네이션 */
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.item,
+.itemSelected {
+  position: relative;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.itemSelected {
+  background: var(--app-accent-bg);
+}
+
+/* 선택된 항목 왼쪽에 녹색 인디케이터 */
+.itemSelected::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--app-accent);
+}
+
+.itemButton {
+  display: flex;
+  gap: 11px;
+  width: 100%;
+  padding: 13px 12px 10px 14px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+.itemButton:focus-visible {
+  outline: 2px solid var(--app-accent);
+  outline-offset: -2px;
+}
+
+.rank {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--app-surface-muted);
+  color: var(--app-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.itemSelected .rank {
+  background: var(--app-accent);
+  color: var(--app-accent-contrast);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.titleRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--app-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.distance {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--app-accent);
+}
+
+.category {
+  font-size: 12px;
+  color: var(--app-text-muted);
+}
+
+.address,
+.phone {
+  font-size: 12px;
+  color: var(--app-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.link {
+  display: inline-block;
+  margin: 0 14px 11px 47px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  color: var(--app-accent);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link:hover,
+.link:focus-visible {
+  text-decoration: underline;
+}
+
+/* 검색 전 / 결과 없음 / 에러 공통 영역 */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.placeholderTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.placeholderText {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--app-text-muted);
+}

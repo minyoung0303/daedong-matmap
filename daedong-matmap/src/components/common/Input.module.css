@@ -1,0 +1,24 @@
+.input {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  /* iOS에서 16px 미만이면 포커스 시 화면이 확대된다. */
+  font-size: 16px;
+  padding: 9px 14px;
+  border: 1px solid var(--app-border);
+  border-radius: 999px;
+  background: var(--app-surface);
+  color: var(--app-text);
+  min-height: 38px;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: var(--app-text-muted);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--app-accent);
+  box-shadow: 0 0 0 3px var(--app-accent-bg);
+}

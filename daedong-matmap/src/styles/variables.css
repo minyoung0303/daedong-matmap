@@ -1,0 +1,36 @@
+/**
+ * 앱 디자인 토큰.
+ * UX/UI를 다시 잡을 때 색과 간격은 대부분 이 파일만 고치면 된다.
+ *
+ * 다크모드 분기는 넣지 않는다.
+ * 앱인토스 출시 체크리스트에 "미니앱 테마는 라이트 모드로 구현돼 있어요" 항목이 있다.
+ */
+
+:root {
+  color-scheme: light;
+
+  --app-bg: #ffffff;
+  --app-surface: #ffffff;
+  --app-surface-muted: #f2f5f3;
+
+  --app-text: #16181a;
+  --app-text-muted: #6b7280;
+
+  --app-border: #e3e7e4;
+
+  /* 메인 색: 녹음색 (짙은 초록). 흰 글자와 대비 5.5:1 이상. */
+  --app-accent: #15704a;
+  --app-accent-strong: #0e5334;
+  --app-accent-soft: #e6f1eb;
+  --app-accent-bg: rgba(21, 112, 74, 0.09);
+  --app-accent-contrast: #ffffff;
+
+  --app-danger: #b42318;
+  --app-danger-bg: rgba(180, 35, 24, 0.08);
+
+  /* 지도 높이. 지도와 리스트 비율을 여기서 조절한다. */
+  --app-map-height: 38svh;
+
+  /* 우측 세로 페이지네이션 폭 */
+  --app-pager-width: 36px;
+}
