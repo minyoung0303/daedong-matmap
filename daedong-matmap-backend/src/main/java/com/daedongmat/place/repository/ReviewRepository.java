@@ -1,6 +1,6 @@
 package com.daedongmat.place.repository;
 
-import com.daedongmat.entity.Review;
+import com.daedongmat.place.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

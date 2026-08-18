@@ -1,4 +1,4 @@
-package com.daedongmat.entity;
+package com.daedongmat.place.entity;
 
 public enum PlaceStatus {
     ACTIVE,

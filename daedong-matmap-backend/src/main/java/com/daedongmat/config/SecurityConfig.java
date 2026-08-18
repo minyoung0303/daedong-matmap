@@ -22,8 +22,9 @@ import java.util.List;
 public class SecurityConfig {
 
     /**
-     * 개발용 프론트 오리진. 배포 시에는 실제 도메인으로 바꾼다.
-     * 콤마로 구분된 문자열을 Spring이 List로 변환해 준다.
+     * 허용할 프론트 오리진.
+     * 하드코딩하지 않고 프로퍼티로 빼서 배포 환경에서 덮어쓸 수 있게 한다.
+     * (application.yml 의 app.cors.allowed-origins, 콤마로 구분)
      */
     @Value("${app.cors.allowed-origins:http://localhost:5173}")
     private List<String> allowedOrigins;
@@ -51,13 +52,19 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Content-Type", "X-User-Key"));
+        // 실제로 쓰는 헤더만 허용한다. 헤더를 추가할 때 이 목록도 같이 늘려야 한다.
+        // (와일드카드가 편하지만, 허용 범위를 눈으로 확인할 수 있게 명시해 둔다)
+        configuration.setAllowedHeaders(List.of("Content-Type", "X-User-Key", "Authorization"));
+        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowCredentials(true);
+        // preflight 응답을 캐시해 OPTIONS 요청을 줄인다.
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/**", configuration);
 
         return source;
     }

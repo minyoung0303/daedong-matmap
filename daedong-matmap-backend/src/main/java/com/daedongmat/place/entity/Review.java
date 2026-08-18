@@ -1,4 +1,4 @@
-package com.daedongmat.entity;
+package com.daedongmat.place.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

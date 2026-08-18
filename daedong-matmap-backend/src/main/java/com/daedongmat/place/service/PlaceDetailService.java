@@ -1,11 +1,11 @@
 package com.daedongmat.place.service;
 
-import com.daedongmat.entity.Menu;
-import com.daedongmat.entity.Place;
-import com.daedongmat.entity.PlaceSource;
-import com.daedongmat.entity.PlaceStatus;
-import com.daedongmat.entity.PlaceType;
-import com.daedongmat.entity.Review;
+import com.daedongmat.place.entity.Menu;
+import com.daedongmat.place.entity.Place;
+import com.daedongmat.place.entity.PlaceSource;
+import com.daedongmat.place.entity.PlaceStatus;
+import com.daedongmat.place.entity.PlaceType;
+import com.daedongmat.place.entity.Review;
 import com.daedongmat.place.dto.KakaoPlacePayload;
 import com.daedongmat.place.dto.MenuResponse;
 import com.daedongmat.place.dto.PlaceDetailResponse;

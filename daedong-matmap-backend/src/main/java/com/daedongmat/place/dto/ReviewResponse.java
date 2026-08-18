@@ -1,6 +1,6 @@
 package com.daedongmat.place.dto;
 
-import com.daedongmat.entity.Review;
+import com.daedongmat.place.entity.Review;
 
 import java.time.LocalDateTime;
 
