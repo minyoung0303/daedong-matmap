@@ -1,29 +1,46 @@
+# 설정 파일은 이 하나만 쓴다.
+# 이전에는 application.properties와 application.yml이 같이 있어서 ddl-auto 값이 서로 달랐고
+# (properties=update, yml=none) properties가 이기는 바람에 Hibernate가 스키마를 만들고 있었다.
+# 지금은 Flyway가 스키마를 소유하고, Hibernate는 엔티티와 스키마가 맞는지만 검사한다.
+
 spring:
   application:
     name: daedong-matmap
 
   datasource:
+    # 비밀번호는 환경변수로 덮을 수 있게 해뒀다. 배포 시에는 반드시 DB_PASSWORD를 지정한다.
     url: jdbc:postgresql://localhost:5433/daedong_matmap
-    username: daedong
-    password: 12345
+    username: ${DB_USERNAME:daedong}
+    password: ${DB_PASSWORD:12345}
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none
+      # 스키마 변경은 Flyway 마이그레이션으로만 한다.
+      # validate는 엔티티와 실제 테이블이 어긋나면 부팅을 실패시켜서 드리프트를 막아준다.
+      ddl-auto: validate
     show-sql: false
     open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
 
   flyway:
     enabled: true
-    url: jdbc:postgresql://localhost:5433/daedong_matmap
-    user: daedong
-    password: 12345
+    # 기본 경로가 classpath:db/migration 이다. 예전에는 파일이 db/에 있어서 아무것도 실행되지 않았다.
+    locations: classpath:db/migration
+    baseline-on-migrate: false
 
 server:
   port: 8080
   servlet:
     context-path: /
+
+app:
+  cors:
+    # Vite 개발 서버. 배포 시 실제 프론트 도메인으로 교체한다.
+    # YAML 리스트로 쓰면 @Value 플레이스홀더가 해석하지 못하므로 콤마로 구분한다.
+    allowed-origins: http://localhost:5173,http://127.0.0.1:5173
 
 logging:
   level:
